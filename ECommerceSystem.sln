@@ -1,9 +1,11 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 17
-VisualStudioVersion = 17.13.35931.197 d17.13
+VisualStudioVersion = 17.13.35931.197
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ECommerceSystem", "ECommerceSystem\ECommerceSystem.csproj", "{A0CEF285-AE15-4570-B23C-692DDAEE029F}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ECommerceSystem.Core", "ECommerceSystem.Core\ECommerceSystem.Core.csproj", "{2F2ABE17-2DF1-4932-994E-640EF52E5CB3}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -15,6 +17,10 @@ Global
 		{A0CEF285-AE15-4570-B23C-692DDAEE029F}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{A0CEF285-AE15-4570-B23C-692DDAEE029F}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{A0CEF285-AE15-4570-B23C-692DDAEE029F}.Release|Any CPU.Build.0 = Release|Any CPU
+		{2F2ABE17-2DF1-4932-994E-640EF52E5CB3}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{2F2ABE17-2DF1-4932-994E-640EF52E5CB3}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{2F2ABE17-2DF1-4932-994E-640EF52E5CB3}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{2F2ABE17-2DF1-4932-994E-640EF52E5CB3}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
