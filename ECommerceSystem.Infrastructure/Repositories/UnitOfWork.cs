@@ -1,23 +1,12 @@
-﻿using System.Threading.Tasks;
-using ECommerceSystem.Core.Interfaces;
+﻿using ECommerceSystem.Core.Interfaces;
 using ECommerceSystem.Infrastructure.Data;
+using System.Threading.Tasks;
 
-namespace ECommerceSystem.Infrastructure.Repositories
+namespace ECommerceSystem.Infrastructure
 {
     public class UnitOfWork : IUnitOfWork
     {
         private readonly AppDbContext _context;
-
-        public UnitOfWork(AppDbContext context)
-        {
-            _context = context;
-            Users = new UserRepository(_context);
-            Products = new ProductRepository(_context);
-            Categories = new CategoryRepository(_context);
-            Reviews = new ReviewRepository(_context);
-            CartItems = new CartItemRepository(_context);
-            Orders = new OrderRepository(_context);
-        }
 
         public IUserRepository Users { get; }
         public IProductRepository Products { get; }
@@ -25,6 +14,24 @@ namespace ECommerceSystem.Infrastructure.Repositories
         public IReviewRepository Reviews { get; }
         public ICartItemRepository CartItems { get; }
         public IOrderRepository Orders { get; }
+
+        public UnitOfWork(
+            AppDbContext context,
+            IUserRepository users,
+            IProductRepository products,
+            ICategoryRepository categories,
+            IReviewRepository reviews,
+            ICartItemRepository cartItems,
+            IOrderRepository orders)
+        {
+            _context = context;
+            Users = users;
+            Products = products;
+            Categories = categories;
+            Reviews = reviews;
+            CartItems = cartItems;
+            Orders = orders;
+        }
 
         public async Task<int> SaveChangesAsync()
         {

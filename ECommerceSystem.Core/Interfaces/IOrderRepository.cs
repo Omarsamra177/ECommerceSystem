@@ -1,7 +1,7 @@
-﻿using System;
+﻿using ECommerceSystem.Core.Entities;
+using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
-using ECommerceSystem.Core.Entities;
 
 namespace ECommerceSystem.Core.Interfaces
 {

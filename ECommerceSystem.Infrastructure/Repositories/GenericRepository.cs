@@ -1,9 +1,9 @@
-﻿using System;
+﻿using ECommerceSystem.Core.Interfaces;
+using ECommerceSystem.Infrastructure.Data;
+using Microsoft.EntityFrameworkCore;
+using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
-using Microsoft.EntityFrameworkCore;
-using ECommerceSystem.Core.Interfaces;
-using ECommerceSystem.Infrastructure.Data;
 
 namespace ECommerceSystem.Infrastructure.Repositories
 {
@@ -16,7 +16,7 @@ namespace ECommerceSystem.Infrastructure.Repositories
             _context = context;
         }
 
-        public async Task<T> GetByIdAsync(Guid id)
+        public async Task<T?> GetByIdAsync(Guid id)
         {
             return await _context.Set<T>().FindAsync(id);
         }
@@ -31,14 +31,18 @@ namespace ECommerceSystem.Infrastructure.Repositories
             await _context.Set<T>().AddAsync(entity);
         }
 
-        public void Update(T entity)
-        {
-            _context.Set<T>().Update(entity);
-        }
-
         public void Delete(T entity)
         {
             _context.Set<T>().Remove(entity);
+        }
+
+        public async Task DeleteByIdAsync(Guid id)
+        {
+            var entity = await GetByIdAsync(id);
+            if (entity != null)
+            {
+                Delete(entity);
+            }
         }
     }
 }
