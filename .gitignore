@@ -1,0 +1,44 @@
+# ========================
+# Visual Studio
+# ========================
+.vs/
+*.user
+*.suo
+*.userosscache
+*.sln.docstates
+
+# ========================
+# Build Results
+# ========================
+bin/
+obj/
+
+# ========================
+# .NET
+# ========================
+*.dll
+*.pdb
+
+# ========================
+# Entity Framework
+# ========================
+Migrations/*
+!Migrations/*.cs
+!Migrations/*ModelSnapshot.cs
+
+# ========================
+# App Settings (Secrets)
+# ========================
+appsettings.Development.json
+appsettings.Local.json
+
+# ========================
+# Logs
+# ========================
+*.log
+
+# ========================
+# OS
+# ========================
+Thumbs.db
+.DS_Store
