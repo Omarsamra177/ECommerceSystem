@@ -27,5 +27,7 @@ namespace ECommerceSystem.Core.Entities
         public ICollection<Review> Reviews { get; set; }
 
         public ICollection<OrderItem> OrderItems { get; set; }
+
+        public ICollection<CartItem> CartItems { get; set; }
     }
 }

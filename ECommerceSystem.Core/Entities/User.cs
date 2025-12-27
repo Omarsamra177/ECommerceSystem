@@ -1,5 +1,4 @@
-﻿using ECommerceSystem.Core;
-using System;
+﻿using System;
 using System.Collections.Generic;
 
 namespace ECommerceSystem.Core.Entities
@@ -16,8 +15,13 @@ namespace ECommerceSystem.Core.Entities
 
         public DateTime CreatedAt { get; set; }
 
+        // Relationships
         public ICollection<Order> Orders { get; set; }
+
         public ICollection<Product> Products { get; set; }
+
         public ICollection<Review> Reviews { get; set; }
+
+        public ICollection<CartItem> CartItems { get; set; }
     }
 }
