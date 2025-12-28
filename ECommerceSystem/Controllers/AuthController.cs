@@ -1,13 +1,12 @@
-﻿using Microsoft.AspNetCore.Mvc;
-using ECommerceSystem.Core.Interfaces;
-using ECommerceSystem.Core.Entities;
-using System.Threading.Tasks;
+﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
 using ECommerceSystem.Core.Services;
+using ECommerceSystem.DTOs.Auth;
 
 namespace ECommerceSystem.Controllers
 {
     [ApiController]
-    [Route("api/[controller]")]
+    [Route("api/auth")]
     public class AuthController : ControllerBase
     {
         private readonly IAuthService _authService;
@@ -18,49 +17,24 @@ namespace ECommerceSystem.Controllers
         }
 
         [HttpPost("register")]
-        public async Task<IActionResult> Register(
-            [FromBody] RegisterRequest request)
+        public async Task<IActionResult> Register([FromBody] RegisterDto dto)
         {
-            var user = await _authService.RegisterAsync(
-                request.Email,
-                request.Password,
-                request.Role
-            );
-
-            return Ok(new
-            {
-                user.Id,
-                user.Email,
-                user.Role
-            });
+            var user = await _authService.RegisterAsync(dto.Email, dto.Password, dto.Role);
+            return Ok(user);
         }
 
         [HttpPost("login")]
-        public async Task<IActionResult> Login(
-            [FromBody] LoginRequest request)
+        public async Task<IActionResult> Login([FromBody] LoginDto dto)
         {
-            var token = await _authService.LoginAsync(
-                request.Email,
-                request.Password
-            );
-
-            return Ok(new
-            {
-                Token = token
-            });
+            var token = await _authService.LoginAsync(dto.Email, dto.Password);
+            return Ok(new { token });
         }
-    }
 
-    public class RegisterRequest
-    {
-        public string Email { get; set; }
-        public string Password { get; set; }
-        public UserRole Role { get; set; }
-    }
-
-    public class LoginRequest
-    {
-        public string Email { get; set; }
-        public string Password { get; set; }
+        [HttpPost("logout")]
+        [Authorize]
+        public IActionResult Logout()
+        {
+            return Ok();
+        }
     }
 }

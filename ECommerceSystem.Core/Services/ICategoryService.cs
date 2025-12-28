@@ -8,9 +8,9 @@ namespace ECommerceSystem.Core.Services
     public interface ICategoryService
     {
         Task<IEnumerable<Category>> GetAllAsync();
-        Task<Category> GetByIdAsync(Guid id);
-        Task AddAsync(Category category);
-        Task UpdateAsync(Category category);
+        Task<Category?> GetByIdAsync(Guid id);
+        Task<Category> CreateAsync(string name);
+        Task UpdateAsync(Guid id, string name);
         Task DeleteAsync(Guid id);
     }
 }

@@ -1,49 +1,61 @@
-﻿using Microsoft.AspNetCore.Mvc;
-using Microsoft.AspNetCore.Authorization;
-using ECommerceSystem.Core.Interfaces;
-using ECommerceSystem.Core.Entities;
+﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
 using System;
 using System.Threading.Tasks;
+using ECommerceSystem.Core.Services;
+using ECommerceSystem.DTOs.Categories;
 
 namespace ECommerceSystem.Controllers
 {
     [ApiController]
-    [Route("api/[controller]")]
-    public class CategoriesController : ControllerBase
+    [Route("api/categories")]
+    public class CategoryController : ControllerBase
     {
-        private readonly IUnitOfWork _unitOfWork;
+        private readonly ICategoryService _service;
 
-        public CategoriesController(IUnitOfWork unitOfWork)
+        public CategoryController(ICategoryService service)
         {
-            _unitOfWork = unitOfWork;
+            _service = service;
         }
 
         [HttpGet]
         public async Task<IActionResult> GetAll()
         {
-            var categories = await _unitOfWork.Categories.GetAllAsync();
-            return Ok(categories);
+            return Ok(await _service.GetAllAsync());
         }
 
-        [Authorize(Roles = "Admin")]
-        [HttpPost]
-        public async Task<IActionResult> Create(CreateCategoryRequest request)
+        [HttpGet("{id}")]
+        public async Task<IActionResult> Get(Guid id)
         {
-            var category = new Category
-            {
-                Id = Guid.NewGuid(),
-                Name = request.Name
-            };
+            var category = await _service.GetByIdAsync(id);
 
-            await _unitOfWork.Categories.AddAsync(category);
-            await _unitOfWork.SaveChangesAsync();
+            if (category == null)
+                return NotFound();
 
             return Ok(category);
         }
-    }
 
-    public class CreateCategoryRequest
-    {
-        public string Name { get; set; }
+        [HttpPost]
+        [Authorize(Roles = "Admin")]
+        public async Task<IActionResult> Create([FromBody] CreateCategoryDto dto)
+        {
+            return Ok(await _service.CreateAsync(dto.Name));
+        }
+
+        [HttpPut("{id}")]
+        [Authorize(Roles = "Admin")]
+        public async Task<IActionResult> Update(Guid id, [FromBody] CreateCategoryDto dto)
+        {
+            await _service.UpdateAsync(id, dto.Name);
+            return NoContent();
+        }
+
+        [HttpDelete("{id}")]
+        [Authorize(Roles = "Admin")]
+        public async Task<IActionResult> Delete(Guid id)
+        {
+            await _service.DeleteAsync(id);
+            return NoContent();
+        }
     }
 }

@@ -7,9 +7,9 @@ namespace ECommerceSystem.Core.Services
 {
     public interface IOrderService
     {
+        Task<Order> PlaceOrderAsync(Guid userId);
         Task<IEnumerable<Order>> GetUserOrdersAsync(Guid userId);
-        Task<Order> GetByIdAsync(Guid id);
-        Task<Order> CreateOrderAsync(Guid userId);
-        Task UpdateOrderStatusAsync(Guid orderId, OrderStatus status);
+        Task<Order?> GetByIdAsync(Guid orderId);
+        Task UpdateStatusAsync(Guid orderId, OrderStatus status);
     }
 }

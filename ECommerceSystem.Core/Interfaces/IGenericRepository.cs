@@ -9,7 +9,7 @@ namespace ECommerceSystem.Core.Interfaces
         Task<T?> GetByIdAsync(Guid id);
         Task<IEnumerable<T>> GetAllAsync();
         Task AddAsync(T entity);
-        void Delete(T entity);
+        void Remove(T entity);
         Task DeleteByIdAsync(Guid id);
     }
 }

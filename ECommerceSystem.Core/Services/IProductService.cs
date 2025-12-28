@@ -8,9 +8,26 @@ namespace ECommerceSystem.Core.Services
     public interface IProductService
     {
         Task<IEnumerable<Product>> GetAllAsync();
-        Task<Product> GetByIdAsync(Guid id);
-        Task AddAsync(Product product);
-        Task UpdateAsync(Product product);
-        Task DeleteAsync(Guid id);
+
+        Task<IEnumerable<Product>> GetAllAsync(
+            Guid? categoryId,
+            decimal? minPrice,
+            decimal? maxPrice,
+            double? minRating,
+            string? sortBy,
+            int page,
+            int pageSize);
+
+        Task<Product?> GetByIdAsync(Guid id);
+
+        Task<Product> CreateAsync(Product product, IEnumerable<Guid> categoryIds);
+
+        Task UpdateAsync(Guid productId, Guid sellerId, Product updated, IEnumerable<Guid> categoryIds);
+
+        Task DeleteAsync(Guid productId, Guid sellerId, UserRole role);
+
+        Task<IEnumerable<Product>> GetInventoryAsync(Guid userId, UserRole role);
+
+        Task UpdateStockAsync(Guid productId, Guid userId, UserRole role, int stock);
     }
 }

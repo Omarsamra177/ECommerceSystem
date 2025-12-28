@@ -8,9 +8,9 @@ namespace ECommerceSystem.Core.Interfaces
         IUserRepository Users { get; }
         IProductRepository Products { get; }
         ICategoryRepository Categories { get; }
-        IReviewRepository Reviews { get; }
         ICartItemRepository CartItems { get; }
         IOrderRepository Orders { get; }
+        IReviewRepository Reviews { get; }
 
         Task<int> SaveChangesAsync();
     }

@@ -1,71 +1,100 @@
-﻿using Microsoft.AspNetCore.Mvc;
-using Microsoft.AspNetCore.Authorization;
-using ECommerceSystem.Core.Interfaces;
-using ECommerceSystem.Core.Entities;
+﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
 using System;
 using System.Linq;
 using System.Security.Claims;
 using System.Threading.Tasks;
-using System.Collections.Generic;
+using ECommerceSystem.Core.Entities;
+using ECommerceSystem.Core.Services;
+using ECommerceSystem.DTOs.Orders;
+using ECommerceSystem.DTOs.Payments;
 
 namespace ECommerceSystem.Controllers
 {
     [ApiController]
-    [Route("api/[controller]")]
+    [Route("api/orders")]
     [Authorize]
     public class OrdersController : ControllerBase
     {
-        private readonly IUnitOfWork _unitOfWork;
+        private readonly IOrderService _orderService;
+        private readonly IPaymentService _paymentService;
 
-        public OrdersController(IUnitOfWork unitOfWork)
+        public OrdersController(
+            IOrderService orderService,
+            IPaymentService paymentService)
         {
-            _unitOfWork = unitOfWork;
+            _orderService = orderService;
+            _paymentService = paymentService;
         }
 
         [HttpPost]
         public async Task<IActionResult> PlaceOrder()
         {
             var userId = Guid.Parse(User.FindFirstValue(ClaimTypes.NameIdentifier));
-            var cartItems = await _unitOfWork.CartItems.GetByUserIdAsync(userId);
+            var order = await _orderService.PlaceOrderAsync(userId);
 
-            if (!cartItems.Any())
-                return BadRequest("Cart is empty");
+            return Ok(Map(order));
+        }
 
-            var order = new Order
-            {
-                Id = Guid.NewGuid(),
-                UserId = userId,
-                OrderDate = DateTime.UtcNow,
-                Status = OrderStatus.Pending,
-                TotalAmount = cartItems.Sum(i => i.Quantity * i.Product.Price),
-                OrderItems = new List<OrderItem>()
-            };
-
-            foreach (var item in cartItems)
-            {
-                order.OrderItems.Add(new OrderItem
-                {
-                    Id = Guid.NewGuid(),
-                    ProductId = item.ProductId,
-                    Quantity = item.Quantity,
-                    UnitPrice = item.Product.Price
-                });
-
-                await _unitOfWork.CartItems.DeleteByIdAsync(item.Id);
-            }
-
-            await _unitOfWork.Orders.AddAsync(order);
-            await _unitOfWork.SaveChangesAsync();
-
-            return Ok(order);
+        [HttpPost("pay")]
+        public async Task<IActionResult> Pay([FromBody] PayOrderDto dto)
+        {
+            await _paymentService.PayAsync(dto.OrderId, dto.Method);
+            return Ok();
         }
 
         [HttpGet]
         public async Task<IActionResult> GetMyOrders()
         {
             var userId = Guid.Parse(User.FindFirstValue(ClaimTypes.NameIdentifier));
-            var orders = await _unitOfWork.Orders.GetByUserIdAsync(userId);
-            return Ok(orders);
+            var orders = await _orderService.GetUserOrdersAsync(userId);
+
+            return Ok(orders.Select(Map));
+        }
+
+        [HttpGet("{id}")]
+        public async Task<IActionResult> GetById(Guid id)
+        {
+            var userId = Guid.Parse(User.FindFirstValue(ClaimTypes.NameIdentifier));
+            var role = User.FindFirstValue(ClaimTypes.Role);
+
+            var order = await _orderService.GetByIdAsync(id);
+
+            if (order == null)
+                return NotFound();
+
+            if (role != UserRole.Admin.ToString() && order.UserId != userId)
+                return Forbid();
+
+            return Ok(Map(order));
+        }
+
+        [HttpPut("{id}/status")]
+        [Authorize(Roles = "Admin")]
+        public async Task<IActionResult> UpdateStatus(
+            Guid id,
+            [FromBody] UpdateOrderStatusDto dto)
+        {
+            await _orderService.UpdateStatusAsync(id, dto.Status);
+            return NoContent();
+        }
+
+        private static OrderResponseDto Map(Order order)
+        {
+            return new OrderResponseDto
+            {
+                Id = order.Id,
+                OrderDate = order.OrderDate,
+                TotalAmount = order.TotalAmount,
+                Status = order.Status.ToString(),
+                Items = order.OrderItems.Select(i => new OrderItemDto
+                {
+                    ProductId = i.ProductId,
+                    ProductName = i.Product.Name,
+                    UnitPrice = i.UnitPrice,
+                    Quantity = i.Quantity
+                }).ToList()
+            };
         }
     }
 }

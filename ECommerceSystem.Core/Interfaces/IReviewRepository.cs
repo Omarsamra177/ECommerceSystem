@@ -8,5 +8,7 @@ namespace ECommerceSystem.Core.Interfaces
     public interface IReviewRepository : IGenericRepository<Review>
     {
         Task<IEnumerable<Review>> GetByProductIdAsync(Guid productId);
+        Task<Review?> GetByUserAndProductAsync(Guid userId, Guid productId);
+        Task<Review?> GetByIdWithUserAsync(Guid id);
     }
 }

@@ -1,7 +1,10 @@
-﻿using ECommerceSystem.Core.Entities;
+﻿using System;
+using System.Threading.Tasks;
+using ECommerceSystem.Core.Entities;
+using ECommerceSystem.Core;
 using ECommerceSystem.Core.Interfaces;
-using ECommerceSystem.Core.Services;
 using ECommerceSystem.Infrastructure.Security;
+using ECommerceSystem.Core.Services;
 
 namespace ECommerceSystem.Infrastructure.Services
 {
@@ -10,23 +13,26 @@ namespace ECommerceSystem.Infrastructure.Services
         private readonly IUnitOfWork _unitOfWork;
         private readonly JwtTokenGenerator _jwtTokenGenerator;
 
-        public AuthService(IUnitOfWork unitOfWork, JwtTokenGenerator jwtTokenGenerator)
+        public AuthService(
+            IUnitOfWork unitOfWork,
+            JwtTokenGenerator jwtTokenGenerator)
         {
             _unitOfWork = unitOfWork;
             _jwtTokenGenerator = jwtTokenGenerator;
         }
 
-        public async Task<User> RegisterAsync(string email, string password, UserRole role)
+        public async Task<User> RegisterAsync(
+            string email,
+            string password,
+            UserRole role)
         {
-            var existingUser = await _unitOfWork.Users.GetByEmailAsync(email);
-            if (existingUser != null)
-                throw new Exception("Email already exists");
+            var hashedPassword = BCrypt.Net.BCrypt.HashPassword(password);
 
             var user = new User
             {
                 Id = Guid.NewGuid(),
                 Email = email,
-                PasswordHash = PasswordHasher.HashPassword(password),
+                PasswordHash = hashedPassword,
                 Role = role,
                 CreatedAt = DateTime.UtcNow
             };
@@ -37,14 +43,14 @@ namespace ECommerceSystem.Infrastructure.Services
             return user;
         }
 
-        public async Task<string> LoginAsync(string email, string password)
+        public async Task<string> LoginAsync(
+            string email,
+            string password)
         {
             var user = await _unitOfWork.Users.GetByEmailAsync(email);
-            if (user == null)
-                throw new Exception("Invalid credentials");
 
-            if (!PasswordHasher.VerifyPassword(password, user.PasswordHash))
-                throw new Exception("Invalid credentials");
+            if (user == null || !BCrypt.Net.BCrypt.Verify(password, user.PasswordHash))
+                throw new UnauthorizedAccessException("Invalid credentials");
 
             return _jwtTokenGenerator.GenerateToken(user);
         }

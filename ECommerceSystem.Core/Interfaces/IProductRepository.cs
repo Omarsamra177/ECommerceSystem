@@ -1,5 +1,5 @@
 ﻿using System;
-using System.Collections.Generic;
+using System.Linq;
 using System.Threading.Tasks;
 using ECommerceSystem.Core.Entities;
 
@@ -7,6 +7,8 @@ namespace ECommerceSystem.Core.Interfaces
 {
     public interface IProductRepository : IGenericRepository<Product>
     {
-        Task<IEnumerable<Product>> GetBySellerIdAsync(Guid sellerId);
+        IQueryable<Product> QueryWithIncludes();
+        Task AddCategoryAsync(Guid productId, Guid categoryId);
+        Task ClearCategoriesAsync(Guid productId);
     }
 }

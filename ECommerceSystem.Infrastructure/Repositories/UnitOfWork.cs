@@ -1,6 +1,7 @@
-﻿using ECommerceSystem.Core.Interfaces;
+﻿using System.Threading.Tasks;
+using ECommerceSystem.Core.Interfaces;
 using ECommerceSystem.Infrastructure.Data;
-using System.Threading.Tasks;
+using ECommerceSystem.Infrastructure.Repositories;
 
 namespace ECommerceSystem.Infrastructure
 {
@@ -11,26 +12,20 @@ namespace ECommerceSystem.Infrastructure
         public IUserRepository Users { get; }
         public IProductRepository Products { get; }
         public ICategoryRepository Categories { get; }
-        public IReviewRepository Reviews { get; }
         public ICartItemRepository CartItems { get; }
         public IOrderRepository Orders { get; }
+        public IReviewRepository Reviews { get; }
 
-        public UnitOfWork(
-            AppDbContext context,
-            IUserRepository users,
-            IProductRepository products,
-            ICategoryRepository categories,
-            IReviewRepository reviews,
-            ICartItemRepository cartItems,
-            IOrderRepository orders)
+        public UnitOfWork(AppDbContext context)
         {
             _context = context;
-            Users = users;
-            Products = products;
-            Categories = categories;
-            Reviews = reviews;
-            CartItems = cartItems;
-            Orders = orders;
+
+            Users = new UserRepository(context);
+            Products = new ProductRepository(context);
+            Categories = new CategoryRepository(context);
+            CartItems = new CartItemRepository(context);
+            Orders = new OrderRepository(context);
+            Reviews = new ReviewRepository(context);
         }
 
         public async Task<int> SaveChangesAsync()
